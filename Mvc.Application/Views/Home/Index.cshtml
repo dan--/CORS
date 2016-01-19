@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h3>@Request.RequestContext.HttpContext.User.Identity.Name</h3>
+    or
+    <h3>@HttpContext.Current.User.Identity.Name</h3>
+</div>
+
+<div class="text-info">
+    <p>The following panels are calling the same api implementation one in local site and the other one in a different site (different port).
+        Both applicaitons are set as Windows Authentication. As the result you will see the internal site returns the result normally where as the
+        Cross-Site rejects the call. You can see the detail message in browser debug session.</p>
+    <p class="text-danger">No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://localhost:60789' is therefore not allowed access. The response had HTTP status code 401</p>
+</div>
+<div class="panel panel-info">
+    <div class="panel-heading">Calling Internal API</div>
+    <div class="panel-body">
+        <p>The following span will be updated after ajax call</p>
+        <span id="internal-result" class="text-danger">End Result Should Go Here</span>
+    </div>
+</div>
+<div class="panel panel-info">
+    <div class="panel-heading">Calling Cross Origin API</div>
+    <div class="panel-body">
+        <p>The following span will be updated after ajax call</p>
+        <span id="cross-site-result" class="text-danger">End Result Should Go Here</span>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $.ajax(
+        {
+            url: 'http://localhost:60852/api/test',
+            success: function(a) {
+                $('#cross-site-result').html(JSON.stringify(a));
+            },
+            error: function(errorObject) {
+                $('#cross-site-result').html(JSON.stringify(errorObject));
+            }
+        });
+
+        $.ajax(
+        {
+            url: 'http://localhost:60789/api/test',
+            success: function (a) {
+                $('#internal-result').html(JSON.stringify(a));
+            },
+            error: function(errorObject) {
+                $('#internal-result').html(JSON.stringify(errorObject));
+            }
+        });
+    });
+</script>
